@@ -4,7 +4,7 @@ A browser-based preview tool that reproduces the Valorant kill icon animation �
 
 一个复现 Valorant 击杀图标动画的浏览器预览工具：多层合成（外框 / 徽章 / 击杀数 / 光环 / 爆头标记 / 粒子 / 闪光），由精灵图帧动画与缓动变换驱动。零依赖、无需构建，打开一个 HTML 文件即可使用。
 
-- **Live demo / 在线预览**: <https://zhinianqaq.github.io/Valorant-Kill-Icon-Preview/>
+- **Live demo / 在线预览**: <https://zhinianqaq.github.io/Valorant-KillIcon-Preview/>
 
 ---
 
@@ -99,7 +99,7 @@ The repository is published at:
 
 本仓库已发布在：
 
-<https://zhinianqaq.github.io/Valorant-Kill-Icon-Preview/>
+<https://zhinianqaq.github.io/Valorant-KillIcon-Preview/>
 
 The site is a static page — push the files to the `main` branch and GitHub Pages serves `index.html` directly. All assets are referenced with relative paths, so no additional configuration is needed.
 
