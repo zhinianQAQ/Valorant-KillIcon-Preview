@@ -1,0 +1,1282 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title data-i18n="title">Valorant 击杀图标动画预览</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%23FF4655'/%3E%3Cpath d='M18 22h12a8 8 0 0 1 0 16h-6v8H18zm6 6v4h5a2 2 0 0 0 0-4z' fill='%23fff'/%3E%3Cpath d='M38 22h8l6 22h-6l-1.4-5h-5.2L38 44h-6z' fill='%23fff'/%3E%3C/svg%3E">
+<link rel="stylesheet" href="size-tuning.css">
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --bg: #0E1116;
+  --panel: #151A23;
+  --panel-2: #1B222D;
+  --line: #252E3C;
+  --text: #E8ECF2;
+  --sub: #8B93A3;
+  --accent: #FF4655;
+  --accent-dim: #B22E3B;
+  --ok: #4ADE80;
+}
+html, body { height: 100%; }
+body {
+  background: var(--bg); color: var(--text);
+  font-family: "Segoe UI", "Microsoft YaHei", system-ui, -apple-system, sans-serif;
+  font-size: 14px; line-height: 1.5;
+}
+/* ===== 顶部栏 ===== */
+.topbar {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  padding: 12px 18px; background: var(--panel); border-bottom: 1px solid var(--line);
+  position: sticky; top: 0; z-index: 20;
+}
+.topbar .logo {
+  width: 34px; height: 34px; border-radius: 8px; background: var(--accent);
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.topbar .logo svg { width: 20px; height: 20px; }
+.topbar h1 { font-size: 17px; font-weight: 700; letter-spacing: .3px; white-space: nowrap; }
+.topbar .desc { font-size: 12px; color: var(--sub); min-width: 0; }
+.topbar .tag {
+  font-size: 11px; color: var(--sub);
+  border: 1px solid var(--line); border-radius: 20px; padding: 3px 10px; white-space: nowrap;
+}
+.topbar .lang-btn {
+  margin-left: auto; font-size: 12px; font-weight: 600; color: var(--text);
+  background: var(--panel-2); border: 1px solid var(--line); border-radius: 20px;
+  padding: 4px 14px; cursor: pointer; transition: all .15s; white-space: nowrap;
+}
+.topbar .lang-btn:hover { color: #fff; border-color: var(--accent); }
+/* ===== 主区域 ===== */
+.main { display: flex; align-items: stretch; }
+/* ===== 控制面板 ===== */
+.panel {
+  width: 320px; flex-shrink: 0; background: var(--panel);
+  border-right: 1px solid var(--line); padding: 14px 14px 20px;
+  overflow-y: auto; max-height: calc(100vh - 59px); position: sticky; top: 59px;
+}
+.panel h2 {
+  font-size: 12px; font-weight: 700; color: var(--sub); letter-spacing: 1px;
+  text-transform: uppercase; margin: 16px 0 8px;
+}
+.panel h2:first-child { margin-top: 0; }
+.row { margin-bottom: 10px; }
+.row label { display: block; font-size: 12px; color: var(--sub); margin-bottom: 5px; }
+select, input[type="range"] { width: 100%; }
+select {
+  background: var(--panel-2); color: var(--text); border: 1px solid var(--line);
+  border-radius: 6px; padding: 8px 10px; font-size: 14px; appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%238B93A3'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 10px center;
+}
+select:focus, button:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+/* 按钮组 */
+.seg {
+  display: flex; flex-wrap: wrap; gap: 6px;
+}
+.seg button {
+  flex: 1 1 auto; min-width: 56px; min-height: 40px;
+  background: var(--panel-2); color: var(--sub); border: 1px solid var(--line);
+  border-radius: 6px; font-size: 13px; cursor: pointer; transition: all .15s;
+}
+.seg button:hover { color: var(--text); border-color: var(--sub); }
+.seg button.active { background: var(--accent); border-color: var(--accent); color: #fff; font-weight: 600; }
+/* 主按钮 */
+.btn-primary, .btn-ghost {
+  min-height: 42px; border-radius: 6px; font-size: 14px; font-weight: 600;
+  cursor: pointer; transition: all .15s; padding: 8px 14px;
+}
+.btn-primary { background: var(--accent); color: #fff; border: 1px solid var(--accent); flex: 1; }
+.btn-primary:hover { background: var(--accent-dim); border-color: var(--accent-dim); }
+.btn-ghost { background: transparent; color: var(--sub); border: 1px solid var(--line); }
+.btn-ghost:hover { color: var(--text); border-color: var(--sub); }
+.play-row { display: flex; gap: 8px; }
+/* 开关 */
+.switch-row { display: flex; align-items: center; justify-content: space-between; padding: 5px 0; }
+.switch-row span { font-size: 13px; color: var(--text); }
+.switch {
+  position: relative; width: 44px; height: 24px; flex-shrink: 0; cursor: pointer;
+}
+.switch input { opacity: 0; width: 0; height: 0; }
+.switch .sl {
+  position: absolute; inset: 0; background: var(--line); border-radius: 24px; transition: .2s;
+}
+.switch .sl::before {
+  content: ""; position: absolute; width: 18px; height: 18px; left: 3px; top: 3px;
+  background: #fff; border-radius: 50%; transition: .2s;
+}
+.switch input:checked + .sl { background: var(--accent); }
+.switch input:checked + .sl::before { transform: translateX(20px); }
+/* 滑杆 */
+input[type="range"] {
+  -webkit-appearance: none; appearance: none; height: 4px; border-radius: 4px;
+  background: var(--line); outline: none; margin: 8px 0;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none; appearance: none; width: 18px; height: 18px; border-radius: 50%;
+  background: var(--accent); border: 2px solid #fff; cursor: pointer;
+}
+input[type="range"]::-moz-range-thumb {
+  width: 18px; height: 18px; border-radius: 50%; background: var(--accent);
+  border: 2px solid #fff; cursor: pointer;
+}
+.val-label { display: flex; justify-content: space-between; font-size: 12px; color: var(--sub); }
+/* ===== 舞台区 ===== */
+.stage {
+  flex: 1; min-width: 0; padding: 16px; display: flex; flex-direction: column; gap: 12px;
+}
+.canvas-wrap {
+  position: relative; background: #000;
+  border: 1px solid var(--line); border-radius: 12px; overflow: hidden;
+  min-height: 420px; flex: 1; display: flex; align-items: center; justify-content: center;
+}
+canvas#stage { display: block; width: 100%; height: auto; }
+.hud {
+  position: absolute; left: 12px; bottom: 10px; display: flex; gap: 14px; flex-wrap: wrap;
+  font-size: 12px; color: var(--sub); pointer-events: none;
+}
+.hud b { color: var(--text); font-weight: 600; }
+.hud .bar {
+  position: absolute; left: 12px; right: 12px; bottom: 34px; height: 3px;
+  background: #232B38; border-radius: 3px; overflow: hidden;
+}
+.hud .bar i { display: block; height: 100%; background: var(--accent); width: 0%; }
+/* 预设信息 */
+.info-table { width: 100%; border-collapse: collapse; font-size: 12px; margin-top: 6px; }
+.info-table td { padding: 4px 6px; border-bottom: 1px solid var(--line); color: var(--sub); }
+.info-table td:last-child { color: var(--text); text-align: right; }
+/* ===== 响应式 ===== */
+@media (max-width: 860px) {
+  .main { flex-direction: column; }
+  .panel {
+    width: 100%; max-height: none; position: static; border-right: none;
+    border-bottom: 1px solid var(--line);
+  }
+  .canvas-wrap { min-height: 340px; }
+  .topbar .desc { display: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- ===== 顶部栏 ===== -->
+<header class="topbar">
+  <div class="logo" aria-hidden="true">
+    <svg viewBox="0 0 64 64" fill="none"><path d="M14 20h14a9 9 0 0 1 0 18h-7v9h-7zm7 7v4h6a2 2 0 0 0 0-4z" fill="#fff"/><path d="M38 20h9l7 26h-7l-1.6-6h-6.8L38 46h-7z" fill="#fff"/></svg>
+  </div>
+  <h1 data-i18n="h1">Valorant 击杀图标动画预览</h1>
+  <button type="button" class="lang-btn" id="langBtn">EN</button>
+  <span class="tag" id="skinTag">紫阙金琅2.0</span>
+</header>
+
+<!-- ===== 主区域 ===== -->
+<div class="main">
+
+  <!-- ===== 控制面板 ===== -->
+  <aside class="panel">
+    <h2 data-i18n="skin">皮肤</h2>
+    <div class="row">
+      <select id="skinSelect" data-i18n-aria="skinAria"></select>
+    </div>
+    <div class="row">
+      <div class="seg" id="variantSeg" style="display:none"></div>
+    </div>
+
+    <h2 data-i18n="killTrigger">击杀触发</h2>
+    <div class="row">
+      <label data-i18n="killType">击杀类型</label>
+      <div class="seg" id="typeSeg">
+        <button data-type="0" class="active" data-i18n="typeNormal">普通</button>
+        <button data-type="1" data-i18n="typeHeadshot">爆头</button>
+      </div>
+    </div>
+    <div class="row">
+      <label data-i18n="comboLabel">连杀数（决定击杀数数量与旋转）</label>
+      <div class="seg" id="comboSeg">
+        <button data-combo="1" class="active">1</button>
+        <button data-combo="2">2</button>
+        <button data-combo="3">3</button>
+        <button data-combo="4">4</button>
+        <button data-combo="5">5</button>
+        <button data-combo="6">6</button>
+      </div>
+    </div>
+
+    <h2 data-i18n="playback">播放</h2>
+    <div class="row play-row">
+      <button class="btn-primary" id="btnPlay" type="button" data-i18n="btnPlay">触发一次击杀</button>
+      <button class="btn-ghost" id="btnReset" type="button" data-i18n="btnReset">重置</button>
+      <button class="btn-ghost" id="btnPause" type="button" data-i18n="btnPause">暂停</button>
+    </div>
+    <div class="row switch-row">
+      <span data-i18n="loop">循环播放</span>
+      <label class="switch"><input type="checkbox" id="chkLoop"><span class="sl"></span></label>
+    </div>
+    <div class="row switch-row">
+      <span data-i18n="sound">音效</span>
+      <label class="switch"><input type="checkbox" id="chkSound" checked><span class="sl"></span></label>
+    </div>
+    <div class="row">
+      <label data-i18n="speed">播放速度</label>
+      <input type="range" id="speedRange" min="0.25" max="2" step="0.25" value="1">
+      <div class="val-label"><span>0.25x</span><span id="speedVal">1x</span><span>2x</span></div>
+    </div>
+    <div class="row">
+      <label data-i18n="zoom">缩放</label>
+      <input type="range" id="zoomRange" min="0.5" max="2" step="0.05" value="1">
+      <div class="val-label"><span>0.5x</span><span id="zoomVal">1x</span><span>2x</span></div>
+    </div>
+
+    <h2 data-i18n="layers">图层开关</h2>
+    <div class="switch-row"><span data-i18n="layerBase">粒子底爆</span><label class="switch"><input type="checkbox" data-layer="base" checked><span class="sl"></span></label></div>
+    <div class="switch-row"><span data-i18n="layerHalo">光环</span><label class="switch"><input type="checkbox" data-layer="halo" checked><span class="sl"></span></label></div>
+    <div class="switch-row"><span data-i18n="layerBar">击杀数</span><label class="switch"><input type="checkbox" data-layer="bar" checked><span class="sl"></span></label></div>
+    <div class="switch-row"><span data-i18n="layerFrame">外框</span><label class="switch"><input type="checkbox" data-layer="frame" checked><span class="sl"></span></label></div>
+    <div class="switch-row"><span data-i18n="layerBlade">刀刃</span><label class="switch"><input type="checkbox" data-layer="blade" checked><span class="sl"></span></label></div>
+    <div class="switch-row"><span data-i18n="layerEmblem">徽章</span><label class="switch"><input type="checkbox" data-layer="emblem" checked><span class="sl"></span></label></div>
+    <div class="switch-row"><span data-i18n="layerHeadshot">爆头标记</span><label class="switch"><input type="checkbox" data-layer="headshot" checked><span class="sl"></span></label></div>
+    <div class="switch-row"><span data-i18n="layerOverlay">叠加粒子</span><label class="switch"><input type="checkbox" data-layer="overlay" checked><span class="sl"></span></label></div>
+    <div class="switch-row"><span data-i18n="layerFlash">图标闪光</span><label class="switch"><input type="checkbox" data-layer="flash" checked><span class="sl"></span></label></div>
+
+    <h2 data-i18n="params">当前皮肤动画参数</h2>
+    <table class="info-table" id="infoTable">
+      <tbody></tbody>
+    </table>
+  </aside>
+
+  <!-- ===== 舞台区 ===== -->
+  <div class="stage">
+    <div class="canvas-wrap">
+      <canvas id="stage"></canvas>
+      <div class="hud">
+        <div class="bar"><i id="progBar"></i></div>
+        <span><span data-i18n="time">时间</span> <b id="hudTime">0</b> ms</span>
+        <span><span data-i18n="frame">帧</span> <b id="hudFrame">0</b></span>
+        <span><span data-i18n="combo">连杀</span> <b id="hudCombo">1</b></span>
+        <span><span data-i18n="type">类型</span> <b id="hudType">普通</b></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="assets/skin-data.js"></script>
+<script>
+(function () {
+  "use strict";
+
+  /* ================= 常量 ================= */
+  var DURATION = 2600;            // 默认显示时长 ms
+  var FADE_OUT = 220;             // 末段淡出 ms
+  var FIVE_FADE_IN = 300;         // combo>=5 淡入 ms
+  var ICON_BASE = 116;            // 徽章基准尺寸 px
+  var BAR_BASE = 32;              // 进度条基准尺寸
+  var PARTICLE_BASE = 112;        // 粒子底爆基准尺寸
+  var BAR_RADIUS = 36;            // 击杀数环绕半径
+  var VISUAL_SCALE = 0.95;        // 全局视觉缩放
+  var BAR_BOUNCE_START = 20, BAR_BOUNCE_PEAK = 180, BAR_BOUNCE_HOLD_END = 270, BAR_BOUNCE_END = 620, BAR_BOUNCE_DIST = 9;
+  var BAR_SPIN_START = 750, BAR_SPIN_180 = 700, BAR_SPIN_360 = 1000;
+  var BAR_LAYOUT = [
+    [0],
+    [-90, 90],
+    [0, -120, 120],
+    [0, -90, 90, 180],
+    [0, -72, 72, -144, 144],
+    [0, -60, 60, -120, 120, 180]
+  ];
+  var FLASH_MAX_ALPHA = 0.9;
+
+  /* ================= 缓动函数 ================= */
+  function clamp01(v) { return Math.max(0, Math.min(1, v)); }
+  function lerp(a, b, t) { return a + (b - a) * t; }
+  function easeOutCubic(t) { t = clamp01(t); return 1 - Math.pow(1 - t, 3); }
+  function easeInCubic(t) { t = clamp01(t); return t * t * t; }
+  function easeInQuart(t) { t = clamp01(t); return t * t * t * t; }
+  function easeInQuad(t) { t = clamp01(t); return t * t; }
+  function easeOutQuad(t) { t = clamp01(t); return 1 - (1 - t) * (1 - t); }
+  function easeOutSoft(t) { return lerp(easeOutQuad(t), easeOutCubic(t), 0.2); }
+
+  /* ================= 状态 ================= */
+  var state = {
+    skinIndex: 0,
+    killType: 0,
+    combo: 1,
+    playing: true,
+    paused: false,
+    loop: false,
+    speed: 1,
+    zoom: 1,
+    soundOn: true,
+    startTime: performance.now() - 400,   // 让初始画面处于动画中段，打开即可见效果
+    layers: { base: true, halo: true, bar: true, frame: true, blade: true, emblem: true, headshot: true, overlay: true, flash: true },
+    sound: null
+  };
+
+  /* ================= DOM 引用 ================= */
+  var stage = document.getElementById("stage");
+  var sctx = stage.getContext("2d");
+  var skinSelect = document.getElementById("skinSelect");
+  var skinTag = document.getElementById("skinTag");
+  var progBar = document.getElementById("progBar");
+  var hudTime = document.getElementById("hudTime");
+  var hudFrame = document.getElementById("hudFrame");
+  var hudCombo = document.getElementById("hudCombo");
+  var hudType = document.getElementById("hudType");
+  var infoTable = document.getElementById("infoTable").querySelector("tbody");
+
+  var TEX_BASE = "assets/textures/";
+  var SND_BASE = "assets/sounds/";
+  var texCache = {};
+  var imgPool = {};
+
+  function tex(name) {
+    if (!name) return null;
+    if (!texCache[name]) {
+      var img = new Image();
+      img.src = TEX_BASE + name;
+      texCache[name] = img;
+    }
+    return texCache[name];
+  }
+
+  function isReady(x) { return x && (x.naturalWidth || x.width) > 0; }
+  function parseHexColor(c, fallback) {
+    var s = (c || "").replace("#", "").trim();
+    return /^[0-9a-fA-F]{6}$/.test(s) ? parseInt(s, 16) : fallback;
+  }
+  function hexOf(v) { return "#" + ("000000" + v.toString(16)).slice(-6); }
+
+  /* 预渲染处理缓存：brightness/contrast 滤镜 + 粒子乘法染色，一次性处理、每帧直用 */
+  var procCache = {};
+  function getLayerTex(skin, texName, brightness, contrast, tintInt, fillInt) {
+    var img = tex(texName);
+    if (!isReady(img)) return null;
+    var needB = Math.abs(brightness - 1) > 0.001;
+    var needC = Math.abs(contrast - 1) > 0.001;
+    var needTint = tintInt != null && tintInt !== 0xFFFFFF;
+    var needFill = fillInt != null;
+    if (!needB && !needC && !needTint && !needFill) return img;
+    var key = skin.preset_id + "|" + texName + "|" + (needB ? brightness : 1) + "|" + (needC ? contrast : 1) + "|" + (needTint ? tintInt : 0) + "|" + (needFill ? fillInt : 0);
+    if (procCache[key]) return procCache[key];
+    var off = document.createElement("canvas");
+    off.width = img.naturalWidth;
+    off.height = img.naturalHeight;
+    var c = off.getContext("2d");
+    c.drawImage(img, 0, 0);
+    if (needB || needC) {
+      try { c.filter = "brightness(" + brightness + ") contrast(" + contrast + ")"; } catch (e) {}
+      c.drawImage(img, 0, 0);
+      c.filter = "none";
+    }
+    if (needTint || needFill) {
+      var tl = document.createElement("canvas");
+      tl.width = off.width; tl.height = off.height;
+      var tc = tl.getContext("2d");
+      tc.drawImage(off, 0, 0);
+      if (needTint) {
+        tc.globalCompositeOperation = "multiply";
+        tc.fillStyle = hexOf(tintInt);
+        tc.fillRect(0, 0, tl.width, tl.height);
+      } else {
+        /* 填充模式：用纯色替换像素颜色（保留原 alpha 形状） */
+        tc.globalCompositeOperation = "source-in";
+        tc.fillStyle = hexOf(fillInt);
+        tc.fillRect(0, 0, tl.width, tl.height);
+      }
+      tc.globalCompositeOperation = "destination-in";
+      tc.drawImage(off, 0, 0);
+      c.clearRect(0, 0, off.width, off.height);
+      c.drawImage(tl, 0, 0);
+    }
+    procCache[key] = off;
+    return off;
+  }
+  /* 粒子颜色：优先读 config 的 color_<key>，回退 defaultColor */
+  function particleColor(skin, key, fallback) {
+    var cfg = skin.config || {};
+    return parseHexColor(cfg["color_" + key], fallback);
+  }
+
+  function getSkin() { return SKIN_DATA[state.skinIndex]; }
+
+  /* ================= 皮肤名称中英对照 ================= */
+  /* 中文名仅用于界面显示（皮肤标签、下拉框）；display_name 保持英文，
+     音效拼接与系列识别逻辑依赖英文原名，不可改动。 */
+  var SKIN_NAME_ZH = {
+    "Valorant Prime": "紫阙金琅2.0",
+    "Valorant Glitchpop": "全息波普",
+    "Valorant Singularity": "奇点",
+    "Valorant Singularity V1": "奇点 V1",
+    "Valorant Singularity V2": "奇点 V2",
+    "Valorant Singularity V3": "奇点 V3",
+    "Valorant Gaia's Vengeance": "盖亚的复仇",
+    "Valorant Gaia's Vengeance V1": "盖亚的复仇 V1",
+    "Valorant Gaia's Vengeance V2": "盖亚的复仇 V2",
+    "Valorant Gaia's Vengeance V3": "盖亚的复仇 V3",
+    "Valorant Bubblegum Deathwish": "末日泡泡",
+    "Valorant Bubblegum Deathwish V1": "末日泡泡 V1",
+    "Valorant Bubblegum Deathwish V2": "末日泡泡 V2",
+    "Valorant Bubblegum Deathwish V3": "末日泡泡 V3",
+    "Champions 2021": "2021全球冠军赛",
+    "Valorant Default": "原皮",
+    "Valorant Default MA": "原皮_v1",
+    "Valorant Sovereign": "天界神兵",
+    "Valorant Sovereign V1": "天界神兵 V1",
+    "Valorant Sovereign V2": "天界神兵 V2",
+    "Valorant Sovereign V3": "天界神兵 V3",
+    "Valorant Elderflame": "上古龙炎",
+    "Valorant Oni": "般若假面"
+  };
+  function skinZhName(skin) {
+    return SKIN_NAME_ZH[skin.display_name] || skin.display_name;
+  }
+
+  /* ================= 界面多语言（zh 默认 / en） ================= */
+  var I18N = {
+    title: { zh: "Valorant 击杀图标动画预览", en: "Valorant Kill Icon Animation Preview" },
+    h1: { zh: "Valorant 击杀图标动画预览", en: "Valorant Kill Icon Animation Preview" },
+    skin: { zh: "皮肤", en: "Skin" },
+    skinAria: { zh: "选择皮肤", en: "Select skin" },
+    killTrigger: { zh: "击杀触发", en: "Kill Trigger" },
+    killType: { zh: "击杀类型", en: "Kill Type" },
+    typeNormal: { zh: "普通", en: "Normal" },
+    typeHeadshot: { zh: "爆头", en: "Headshot" },
+    comboLabel: { zh: "连杀数（决定击杀数数量与旋转）", en: "Combo (sets kill count & rotation)" },
+    playback: { zh: "播放", en: "Playback" },
+    btnPlay: { zh: "触发一次击杀", en: "Trigger Kill" },
+    btnReset: { zh: "重置", en: "Reset" },
+    btnPause: { zh: "暂停", en: "Pause" },
+    btnResume: { zh: "继续", en: "Resume" },
+    loop: { zh: "循环播放", en: "Loop" },
+    sound: { zh: "音效", en: "Sound" },
+    speed: { zh: "播放速度", en: "Speed" },
+    zoom: { zh: "缩放", en: "Zoom" },
+    layers: { zh: "图层开关", en: "Layer Toggles" },
+    layerBase: { zh: "粒子底爆", en: "Base Particle" },
+    layerHalo: { zh: "光环", en: "Halo Ring" },
+    layerBar: { zh: "击杀数", en: "Kill Count Ring" },
+    layerFrame: { zh: "外框", en: "Frame" },
+    layerBlade: { zh: "刀刃", en: "Blade" },
+    layerEmblem: { zh: "徽章", en: "Emblem" },
+    layerHeadshot: { zh: "爆头标记", en: "Headshot Marker" },
+    layerOverlay: { zh: "叠加粒子", en: "Overlay Particles" },
+    layerFlash: { zh: "图标闪光", en: "Icon Flash" },
+    params: { zh: "当前皮肤动画参数", en: "Skin Animation Params" },
+    time: { zh: "时间", en: "Time" },
+    frame: { zh: "帧", en: "Frame" },
+    combo: { zh: "连杀", en: "Combo" },
+    type: { zh: "类型", en: "Type" },
+    infoBase: { zh: "粒子底爆", en: "Base Particle" },
+    infoFlame: { zh: "火焰", en: "Flame" },
+    infoLargeSparks: { zh: "大火花", en: "Large Sparks" },
+    infoXSparks: { zh: "X火花", en: "X Sparks" },
+    infoEmblem: { zh: "徽章", en: "Emblem" },
+    infoFrame: { zh: "外框", en: "Frame" },
+    infoBar: { zh: "击杀数", en: "Kill Count Ring" },
+    infoHeadshot: { zh: "爆头", en: "Headshot" },
+    animFrames: { zh: "{n}帧 × {m}ms", en: "{n} frames × {m}ms" },
+    animSingle: { zh: "单帧", en: "Single frame" },
+    variantBase: { zh: "基础", en: "Base" }
+  };
+  var lang = "zh";
+  function t(key) { var m = I18N[key]; return m ? (m[lang] != null ? m[lang] : m.zh) : key; }
+  function skinDisplayName(skin) {
+    if (lang === "en") return skin.display_name;
+    return SKIN_NAME_ZH[skin.display_name] || skin.display_name;
+  }
+  function applyLang() {
+    /* 静态文本：data-i18n 覆盖 textContent，data-i18n-aria 覆盖 aria-label */
+    document.querySelectorAll("[data-i18n]").forEach(function (el) {
+      el.textContent = t(el.getAttribute("data-i18n"));
+    });
+    document.querySelectorAll("[data-i18n-aria]").forEach(function (el) {
+      el.setAttribute("aria-label", t(el.getAttribute("data-i18n-aria")));
+    });
+    document.getElementById("langBtn").textContent = (lang === "zh") ? "EN" : "中文";
+    /* 动态文本：皮肤下拉、变种按钮、参数表、暂停按钮、HUD 类型 */
+    buildSkinSelect();
+    buildVariantSeg();
+    renderInfo();
+    syncPauseBtn();
+    if (document.getElementById("hudType")) document.getElementById("hudType").textContent = t(state.killType === 1 ? "typeHeadshot" : "typeNormal");
+  }
+
+  /* ================= 尺寸微调（读取 size-tuning.css 的 CSS 变量） ================= */
+  var SIZE_TUNING = null;
+  function cssVar(name, fallback) {
+    try {
+      /* 读 body（皮肤系列变量定义在 body.skin-xxx 上；documentElement 读不到 body 的覆盖值） */
+      var root = document.body || document.documentElement;
+      var v = (getComputedStyle(root).getPropertyValue(name) || "").trim();
+      if (v === "") return fallback;
+      var n = parseFloat(v);
+      return isNaN(n) ? fallback : Math.max(0, n);
+    } catch (e) { return fallback; }
+  }
+  function loadSizeTuning() {
+    SIZE_TUNING = {
+      global: cssVar("--global-scale", 1),
+      emblem: cssVar("--layer-emblem-scale", 1),
+      frame: cssVar("--layer-frame-scale", 1),
+      blade: cssVar("--layer-blade-scale", 1),
+      bar: cssVar("--layer-bar-scale", 1),
+      headshot: cssVar("--layer-headshot-scale", 1),
+      "base-particle": cssVar("--layer-base-particle-scale", 1),
+      "hero-flame": cssVar("--layer-hero-flame-scale", 1),
+      "large-sparks": cssVar("--layer-large-sparks-scale", 1),
+      "x-sparks": cssVar("--layer-x-sparks-scale", 1),
+      halo: cssVar("--layer-halo-scale", 1),
+      "ring-width": cssVar("--halo-ring-width", 1),
+      "wipe-duration": cssVar("--halo-wipe-duration", 200),
+      "bar-radius": cssVar("--layer-bar-radius", 0),   /* 击杀数贴图到圆心的额外距离（px，乘缩放） */
+      "particle-global": cssVar("--particle-global-scale", 1)   /* 粒子效果整体缩放（独立于 --global-scale） */
+    };
+  }
+
+  /* ================= 皮肤系列（size-tuning.css 里的 body.skin-xxx 区块） ================= */
+  function skinSeries(skin) {
+    var n = skin.display_name || "";
+    if (/default/i.test(n)) return "default";
+    if (/elderflame/i.test(n)) return "elderflame";
+    if (/sovereign/i.test(n)) return "sovereign";
+    if (/bubblegum/i.test(n)) return "bubblegum";
+    if (/glitchpop/i.test(n)) return "glitchpop";
+    if (/singularity/i.test(n)) return "singularity";
+    if (/gaia/i.test(n)) return "gaia";
+    if (/oni/i.test(n)) return "oni";
+    if (/champions/i.test(n)) return "champions";
+    return "prime";
+  }
+  /* 各系列的光环贴图映射；无对应贴图的系列回退 default_ring.png */
+  var SERIES_RING = {
+    prime: "base_ring.png",
+    bubblegum: "bubblegum_deathwish_ring.png",
+    glitchpop: "glitchpop_ring.png",
+    default: "default_ring.png",
+    sovereign: "sovereign_ring.png",
+    elderflame: "elderflame_ring.png",
+    singularity: "singularityep_ring.png",
+    oni: "oni_ring.png"
+  };
+  function haloRingTex(skin) {
+    var s = skinSeries(skin);
+    return tex(SERIES_RING[s] || "default_ring.png");
+  }
+  /* 切换皮肤时给 body 套上对应系列类（body.skin-xxx），并重新读取 CSS 变量 */
+  function applySkinSeries(skin) {
+    try {
+      document.body.className = "skin-" + skinSeries(skin);
+      loadSizeTuning();
+    } catch (e) { }
+  }
+
+  /* ================= 精灵图切帧 ================= */
+  function getFrame(skin, key, elapsedMs) {
+    var anim = skin.anim && skin.anim[key];
+    var img = tex(skin.textures[key]);
+    var totalW = (img && img.naturalWidth) || 64;
+    var totalH = (img && img.naturalHeight) || 64;
+    if (!anim || !anim.enable_texture_animation) {
+      return { u: 0, v: 0, w: totalW, h: totalH, tw: totalW, th: totalH, index: 0, total: 1 };
+    }
+    var totalFrames = Math.max(1, anim.texture_animation_total_frames || 1);
+    var orientation = anim.texture_animation_orientation || "vertical";
+    var interval = Math.max(1, anim.texture_animation_interval_ms || 100);
+    var loop = !!anim.texture_animation_loop;
+    var style = anim.texture_animation_play_style || "sequential";
+    var frameW = orientation === "horizontal" ? Math.floor(totalW / totalFrames) : totalW;
+    var frameH = orientation === "horizontal" ? totalH : Math.floor(totalH / totalFrames);
+    var tick = Math.floor(Math.max(0, elapsedMs) / interval);
+    var idx = 0;
+    if (style === "random") {
+      var seed = Math.floor(elapsedMs / interval) * 2654435761 + (key || "").length;
+      idx = Math.abs((seed % totalFrames + totalFrames) % totalFrames);
+    } else if (style === "reverse") {
+      idx = loop ? totalFrames - 1 - (tick % totalFrames) : totalFrames - 1 - Math.min(tick, totalFrames - 1);
+    } else if (style === "pingpong" || style === "ping-pong" || style === "ping_pong" || style === "round_trip") {
+      if (totalFrames > 1) {
+        var cycleLen = (totalFrames - 1) * 2;
+        var pos = loop ? (tick % cycleLen) : Math.min(tick, cycleLen);
+        idx = pos < totalFrames ? pos : cycleLen - pos;
+      }
+    } else {
+      idx = loop ? (tick % totalFrames) : Math.min(tick, totalFrames - 1);
+    }
+    idx = Math.max(0, Math.min(idx, totalFrames - 1));
+    var u = orientation === "horizontal" ? idx * frameW : 0;
+    var v = orientation === "horizontal" ? 0 : idx * frameH;
+    return { u: u, v: v, w: frameW, h: frameH, tw: totalW, th: totalH, index: idx, total: totalFrames };
+  }
+
+  /* ================= 画布尺寸管理 ================= */
+  var dpr = Math.min(2, window.devicePixelRatio || 1);
+  function resize() {
+    var wrap = stage.parentElement;
+    var w = wrap.clientWidth - 2;
+    var h = Math.max(420, Math.round(w * 0.66));
+    stage.width = w * dpr;
+    stage.height = h * dpr;
+    stage.style.height = h + "px";
+    sctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+  }
+  window.addEventListener("resize", resize);
+
+  /* ================= 辉光（8 方向偏移） ================= */
+  function drawWithGlow(ctx, img, dx, dy, dw, dh, glowOn, glowColor, glowSize, alpha) {
+    if (glowOn && glowSize > 0.5) {
+      ctx.save();
+      ctx.shadowColor = glowColor;
+      ctx.shadowBlur = glowSize;
+      ctx.globalAlpha = alpha;
+      ctx.drawImage(img, dx, dy, dw, dh);
+      ctx.restore();
+    }
+    ctx.globalAlpha = alpha;
+    ctx.drawImage(img, dx, dy, dw, dh);
+  }
+
+  /* ================= 主渲染 ================= */
+  function render(now) {
+    var skin = getSkin();
+    var cfg = skin.config || {};
+    var elapsed = (now - state.startTime) * state.speed;
+    var displayDur = DURATION;
+    if (elapsed > displayDur) {
+      if (state.loop) { state.startTime = now; elapsed = 0; playKillSound(); }
+      else { elapsed = displayDur; }
+    }
+
+    var W = stage.width / dpr, H = stage.height / dpr;
+    sctx.clearRect(0, 0, W, H);
+    var cx = W / 2, cy = H / 2 + 6;
+
+    /* 整体缩放：scale 用于所有普通图层；粒子效果用独立的 particleScale ——
+       不受 --global-scale 影响，只受 --particle-global-scale 与页面缩放（zoom）控制 */
+    var baseScale = (cfg.scale != null ? cfg.scale : 1) * VISUAL_SCALE * (H / 620);
+    var globalFactor = ((SIZE_TUNING && SIZE_TUNING.global) || 1) * (state.zoom || 1);
+    var scale = baseScale * globalFactor;
+    var particleScale = baseScale * ((SIZE_TUNING && SIZE_TUNING["particle-global"]) || 1) * (state.zoom || 1);
+    var iconScale = cfg.icon_scale != null ? cfg.icon_scale : 1;
+    /* 亮度/对比度：Gaia 皮肤亮度 ×1.3、对比度 1.1 */
+    var gaia = /gaia/i.test(skin.display_name) || /gaia/i.test(skin.textures.emblem || "");
+    var cfgBright = cfg.brightness != null ? cfg.brightness : 1;
+    var brightness = gaia ? cfgBright * 1.3 : cfgBright;
+    var contrast = gaia ? 1.1 : 1;
+
+    /* ---- alpha ---- */
+    var alpha = 1;
+    if (state.combo >= 5 && elapsed < FIVE_FADE_IN) alpha *= easeOutQuad(elapsed / FIVE_FADE_IN);
+    if (displayDur > FADE_OUT && elapsed > displayDur - FADE_OUT) {
+      alpha *= 1 - clamp01((elapsed - (displayDur - FADE_OUT)) / FADE_OUT);
+    }
+
+    /* ---- 各层尺寸（116/32/18.56 × iconScale × texture_scale × frame_ratio × size-tuning.css 微调） ---- */
+    var st = SIZE_TUNING || { global: 1, emblem: 1, frame: 1, blade: 1, bar: 1, headshot: 1, "base-particle": 1, "hero-flame": 1, "large-sparks": 1, "x-sparks": 1, halo: 1 };
+    var emblemW = ICON_BASE * iconScale * scale * st.emblem * frameScale(skin, "emblem", 1) * frameRatio(skin, "emblem", "texture_frame_width_ratio");
+    var emblemH = ICON_BASE * iconScale * scale * st.emblem * frameScale(skin, "emblem", 1) * frameRatio(skin, "emblem", "texture_frame_height_ratio");
+    /* 粒子专用基准尺寸：overlay 粒子的绘制尺寸与偏移都用 particleScale（不受 --global-scale 影响）。
+       基准固定为盖亚等效值（盖亚 CSS --layer-emblem-scale 1.4 × 盖亚 emblem texture_scale 0.9），
+       不随当前皮肤徽章参数变化，保证所有皮肤粒子尺寸一致（与盖亚相同）。 */
+    var pEmblemW = ICON_BASE * iconScale * particleScale * 1.4 * 0.9;
+    var pEmblemH = pEmblemW;
+    var frameW = ICON_BASE * scale * st.frame * frameScale(skin, "frame", 1) * frameRatio(skin, "frame", "texture_frame_width_ratio");
+    var frameH = ICON_BASE * scale * st.frame * frameScale(skin, "frame", 1) * frameRatio(skin, "frame", "texture_frame_height_ratio");
+    var barW = BAR_BASE * scale * st.bar * frameScale(skin, "bar", 1) * frameRatio(skin, "bar", "texture_frame_width_ratio");
+    var barH = BAR_BASE * scale * st.bar * frameScale(skin, "bar", 1) * frameRatio(skin, "bar", "texture_frame_height_ratio");
+    /* 修复非正方形 bar 贴图（如 champions_2021_bar 76×36）被画成正方形的拉伸：
+       barH 按贴图原始纵横比修正（barW 不变），正方形贴图（913/128/32×N）不受影响 */
+    var barImg0 = tex(skin.textures.bar);
+    if (isReady(barImg0)) {
+      var btw = barImg0.naturalWidth, bth = barImg0.naturalHeight;
+      if (btw > 0 && bth > 0 && Math.abs(btw - bth) > 0.001) {
+        barH = barW * bth / btw;
+      }
+    }
+    var hsW = 18.56 * iconScale * scale * st.headshot * frameScale(skin, "headshot", 1) * frameRatio(skin, "headshot", "texture_frame_width_ratio");
+    var hsH = 18.56 * iconScale * scale * st.headshot * frameScale(skin, "headshot", 1) * frameRatio(skin, "headshot", "texture_frame_height_ratio");
+
+    /* ---- 入场位移 / 进度条 / 旋转 / 闪光 ---- */
+    var iconOffsetY = 0;
+    var entryDur = Math.round((cfg.icon_entry_duration != null ? cfg.icon_entry_duration : 0.1) * 1000);
+    var entryStart = cfg.icon_entry_offset_y != null ? cfg.icon_entry_offset_y : -16;
+    if (entryDur > 0 && Math.abs(entryStart) > 0.01 && elapsed < entryDur) {
+      iconOffsetY = lerp(entryStart, 0, easeOutCubic(elapsed / entryDur));
+    }
+    var barTravel = resolveBarTravel(elapsed);
+    var barRotation = resolveBarRotation(elapsed);
+    var flash = resolveFlash(elapsed, cfg);
+    var hsAnim = resolveHeadshot(elapsed, cfg, cfg.color_headshot_overlay || "#FF2A36");
+    var bladeDeg = resolveBlade(elapsed, skin, cfg);
+
+    sctx.save();
+    sctx.translate(cx, cy + iconOffsetY * (1));
+
+    /* 1. base_particle 粒子底爆（112×texture_scale 正方形，镜像+additive，x/y 偏移按配置，粒子染色） */
+    if (state.layers.base && alpha > 0) {
+      var bp = skin.textures.base_particle;
+      var bpImg = getLayerTex(skin, bp, brightness, contrast, particleColor(skin, "base_particle", gaia ? 0xE2505C : 0xFFD138));
+      if (isReady(bpImg)) {
+        var bpFrame = getFrame(skin, "base_particle", elapsed);
+        var pSize = PARTICLE_BASE * frameScale(skin, "base_particle", 1) * particleScale * (st["base-particle"] || 1);
+        if (pSize > 0) {
+          var bpOX = texOffset(skin, "base_particle", "texture_x_offset") * particleScale;
+          var bpOY = texOffset(skin, "base_particle", "texture_y_offset") * particleScale;
+          sctx.save();
+          sctx.globalCompositeOperation = "lighter";
+          sctx.globalAlpha = alpha;
+          drawFrameMirrored(sctx, bpImg, bpFrame, bpOX, bpOY - pSize * 0.8046875, pSize, pSize);
+          sctx.restore();
+        }
+      }
+    }
+
+    /* 2. halo ring 贴图环：使用各系列对应的 ring 贴图（无系列贴图则用 default_ring.png），
+       入场：徽章先出现 → 6 帧后光环才开始从上往下显现（clip 高度从 0 增长到满环），一次性；
+       出场：徽章消失后光环变暗淡出 */
+    if (state.layers.halo && alpha > 0) {
+      var haloR = (cfg.halo_ring_radius != null ? cfg.halo_ring_radius : 30) * scale * (st.halo || 1);
+      var haloD = Math.max(4, haloR * 2);
+      var wipeDur = Math.max(100, (SIZE_TUNING && SIZE_TUNING["wipe-duration"]) || 200); /* 显现时长，来自 size-tuning.css */
+      var haloEntry = entryDelayFrames(skin, 6);        /* 徽章后约 6 帧才显现 */
+      var haloExit = fadeOutRange(elapsed, displayDur - FADE_OUT + 140, 80);   /* 徽章出场后变暗淡出 */
+      var ringImg = haloRingTex(skin);
+      if (isReady(ringImg) && haloExit > 0) {
+        var wp = Math.min(1, Math.max(0, elapsed - haloEntry) / wipeDur);   /* 0 → 1，一次性 */
+        var revealH = haloD * wp;                  /* 从上往下显现的高度 */
+        if (revealH > 0.5) {
+          sctx.save();
+          sctx.globalAlpha = alpha * haloExit;
+          sctx.beginPath();
+          sctx.rect(-haloR, -haloR, haloD, Math.min(haloD, revealH));
+          sctx.clip();
+          sctx.drawImage(ringImg, -haloR, -haloR, haloD, haloD);
+          sctx.restore();
+        }
+      }
+    }
+
+    /* 3. bar ring 击杀数（入场：徽章后约 3 帧淡入；出场：徽章消失后变暗淡出） */
+    if (state.layers.bar && alpha > 0) {
+      var barImg = getLayerTex(skin, skin.textures.bar, brightness, contrast, null);
+      if (isReady(barImg)) {
+        var barEntry = fadeInRange(elapsed, entryDelayFrames(skin, 3), 130);   /* 徽章后 3 帧淡入 */
+        var barExit = fadeOutRange(elapsed, displayDur - FADE_OUT + 140, 80);  /* 徽章出场后变暗淡出 */
+        var barAlpha = alpha * barEntry * barExit;
+        if (barAlpha > 0) {
+          var bAngles = BAR_LAYOUT[Math.max(0, Math.min(5, state.combo - 1))];
+          var dist = (BAR_RADIUS + (cfg.bar_radius_offset || 0) + (SIZE_TUNING && SIZE_TUNING["bar-radius"] || 0) + barTravel) * scale;
+          var entryS = resolveBarEntryScale(elapsed, cfg);
+          var bF = getFrame(skin, "bar", elapsed);
+          for (var bi = 0; bi < bAngles.length; bi++) {
+            sctx.save();
+            sctx.rotate((bAngles[bi] + barRotation) * Math.PI / 180);
+            sctx.translate(0, -dist);
+            sctx.scale(entryS, entryS);
+            sctx.globalAlpha = barAlpha * resolveFinalOpacity(skin, "bar");
+            drawFrame(sctx, barImg, bF, -barW / 2, -barH / 2, barW, barH);
+            sctx.restore();
+          }
+        }
+      }
+    }
+
+    /* 4. frame 外框（入场：徽章后约 3 帧淡入；出场：最先消失） */
+    if (state.layers.frame && alpha > 0) {
+      var frImg = getLayerTex(skin, skin.textures.frame, brightness, contrast, null);
+      if (isReady(frImg)) {
+        var frEntry = fadeInRange(elapsed, entryDelayFrames(skin, 3), 130);  /* 徽章后 3 帧淡入 */
+        var frExit = fadeOutRange(elapsed, displayDur - FADE_OUT, 80);       /* 出场最先消失 */
+        var frAlpha = alpha * frEntry * frExit;
+        if (frAlpha > 0) {
+          var fF = getFrame(skin, "frame", elapsed);
+          sctx.save();
+          sctx.globalAlpha = frAlpha * resolveFinalOpacity(skin, "frame");
+          drawFrame(sctx, frImg, fF, -frameW / 2, -frameH / 2, frameW, frameH);
+          sctx.restore();
+        }
+      }
+    }
+
+    /* 5. blade 刀刃（旋转） */
+    if (state.layers.blade && alpha > 0 && cfg.enable_blade_effect !== false) {
+      var blTex = skin.textures.blade || "bubblegum_deathwish_blade.png";
+      var blImg = getLayerTex(skin, blTex, brightness, contrast, null);
+      if (isReady(blImg)) {
+        var blF = getFrame(skin, "blade", elapsed);
+        var blW = ICON_BASE * scale * st.blade * (cfg.anim && cfg.anim.blade ? (cfg.anim.blade.texture_scale || 1) : 1) * frameRatio(skin, "blade", "texture_frame_width_ratio");
+        var blH = ICON_BASE * scale * st.blade * (cfg.anim && cfg.anim.blade ? (cfg.anim.blade.texture_scale || 1) : 1) * frameRatio(skin, "blade", "texture_frame_height_ratio");
+        sctx.save();
+        if (Math.abs(bladeDeg) > 0.01) sctx.rotate(bladeDeg * Math.PI / 180);
+        sctx.globalAlpha = alpha * resolveFinalOpacity(skin, "blade");
+        drawFrame(sctx, blImg, blF, -blW / 2, -blH / 2, blW, blH);
+        sctx.restore();
+      }
+    }
+
+    /* 6. emblem 徽章 + 闪光 */
+    if (state.layers.emblem && alpha > 0) {
+      var emImg = getLayerTex(skin, skin.textures.emblem, brightness, contrast, null);
+      if (isReady(emImg)) {
+        var eF = getFrame(skin, "emblem", elapsed);
+        var eOffX = texOffset(skin, "emblem", "texture_x_offset") * scale;
+        var eOffY = texOffset(skin, "emblem", "texture_y_offset") * scale;
+        /* 保持贴图原始纵横比，避免非正方形贴图被拉伸（与 bar 修复一致；正方形贴图不受影响）
+           注意：emImg 可能是预渲染 canvas（无 naturalWidth，需用 width 兜底） */
+        var emW = emImg.naturalWidth || emImg.width;
+        var emH = emImg.naturalHeight || emImg.height;
+        var emDrawW = emblemW;
+        var emDrawH = (emW > 0 && emH > 0) ? emblemW * (emH / emW) : emblemH;
+        /* 出场：与外框同时开始缩小淡出（徽章在约 2 帧后彻底消失，之后光环/击杀数才变暗） */
+        var emExit = fadeOutRange(elapsed, displayDur - FADE_OUT, 130);
+        var emExitScale = 1;
+        if (emExit < 1) {
+          var emExitP = 1 - emExit;   /* 0→1 出场进度 */
+          emExitScale = lerp(1, 0.82, easeInCubic(emExitP));
+        }
+        sctx.save();
+        sctx.translate(0, iconOffsetY);
+        if (Math.abs(emExitScale - 1) > 0.001) sctx.scale(emExitScale, emExitScale);
+        // 辉光
+        var glowOn = cfg.enable_icon_glow;
+        var glowCol = cfg.color_icon_glow || "#FFFFFF";
+        var glowSize = (cfg.icon_glow_size != null ? cfg.icon_glow_size : 4) * scale;
+        var glowInt = cfg.icon_glow_intensity != null ? cfg.icon_glow_intensity : 0.45;
+        if (glowOn) {
+          sctx.save();
+          sctx.shadowColor = glowCol;
+          sctx.shadowBlur = glowSize;
+          sctx.globalAlpha = alpha * emExit * glowInt;
+          drawFrame(sctx, emImg, eF, eOffX - emDrawW / 2, eOffY - emDrawH / 2, emDrawW, emDrawH);
+          sctx.restore();
+        }
+        sctx.globalAlpha = alpha * emExit * resolveFinalOpacity(skin, "emblem");
+        drawFrame(sctx, emImg, eF, eOffX - emDrawW / 2, eOffY - emDrawH / 2, emDrawW, emDrawH);
+        /* 闪光层：普通击杀保持原贴图闪光（lighter 加色）；爆头时红色填充闪光
+           （source-over 直接叠加纯红，透明度调低使红色更实、不被冲淡） */
+        if (state.layers.flash && flash.alpha > 0) {
+          var flImg = emImg;
+          var flOp = "lighter";
+          var flAlphaMul = 1;
+          if (state.killType === 1) {
+            flImg = getLayerTex(skin, skin.textures.emblem, brightness, contrast, null, 0xFF2A36);
+            flOp = "source-over";
+            flAlphaMul = 0.75;
+          }
+          if (isReady(flImg)) {
+            sctx.globalCompositeOperation = flOp;
+            sctx.globalAlpha = alpha * emExit * flash.alpha * flAlphaMul * resolveFinalOpacity(skin, "emblem");
+            drawFrame(sctx, flImg, eF, eOffX - emDrawW / 2, eOffY - emDrawH / 2, emDrawW, emDrawH);
+          }
+        }
+        sctx.restore();
+      }
+    }
+
+    /* 7. headshot 爆头标记（红色填充：缩放动画期间在红色与原色间闪烁，动画结束后保持红色） */
+    if (state.layers.headshot && state.killType === 1 && alpha > 0) {
+      var hsDur = Math.round((cfg.headshot_anim_duration != null ? cfg.headshot_anim_duration : 0.25) * 1000);
+      var hsTint = parseHexColor(cfg.color_headshot_overlay, 0xFF2A36);   /* 红色填充色 */
+      /* 闪烁：缩放动画期间每 60ms 在红色染色与原色之间切换；动画结束（或未开启动画）恒为红色 */
+      var hsUseRed = (hsDur <= 0 || elapsed >= hsDur) || (Math.floor(elapsed / 60) % 2 === 0);
+      var hsImg = getLayerTex(skin, skin.textures.headshot, brightness, contrast, hsUseRed ? hsTint : null);
+      if (isReady(hsImg)) {
+        var hsF = getFrame(skin, "headshot", elapsed);
+        sctx.save();
+        sctx.translate(hsOffset(skin, "headshot", "texture_x_offset") * scale, hsOffset(skin, "headshot", "texture_y_offset") * scale);
+        if (Math.abs(hsAnim.scale - 1) > 0.001) sctx.scale(hsAnim.scale, hsAnim.scale);
+        sctx.globalAlpha = alpha * resolveFinalOpacity(skin, "headshot");
+        drawFrame(sctx, hsImg, hsF, -hsW / 2, -hsH / 2, hsW, hsH);
+        sctx.restore();
+      }
+    }
+
+    /* 8. overlay 叠加粒子（各层独立 spec，含偏移/锚点/混合模式） */
+    if (state.layers.overlay && alpha > 0) {
+      sctx.save();
+      // hero_flame
+      drawOverlayParticle(sctx, skin, "hero_flame", elapsed, pEmblemW, pEmblemH, particleScale, iconOffsetY, alpha, brightness, contrast);
+      // large_sparks（combo>=5）
+      if (state.combo >= 5) drawOverlayParticle(sctx, skin, "large_sparks", elapsed, pEmblemW, pEmblemH, particleScale, iconOffsetY, alpha, brightness, contrast);
+      // x_sparks（爆头）
+      if (state.killType === 1) drawOverlayParticle(sctx, skin, "x_sparks", elapsed, pEmblemW, pEmblemH, particleScale, iconOffsetY, alpha, brightness, contrast);
+      sctx.restore();
+    }
+
+    sctx.restore();
+
+    /* ---- HUD ---- */
+    progBar.style.width = Math.min(100, elapsed / displayDur * 100) + "%";
+    hudTime.textContent = Math.round(elapsed);
+    hudCombo.textContent = state.combo;
+    hudType.textContent = t(state.killType === 1 ? "typeHeadshot" : "typeNormal");
+    hudFrame.textContent = "base:" + (getFrame(skin, "base_particle", elapsed).index + 1);
+  }
+
+  /* ---- 工具函数 ---- */
+  function frameRatio(skin, key, suffix) {
+    var a = skin.anim && skin.anim[key];
+    if (!a) return 1;
+    var v = a[suffix];
+    return v > 0 ? v : 1;
+  }
+  function frameScale(skin, key, fallback) {
+    var a = skin.anim && skin.anim[key];
+    return a && a.texture_scale != null && a.texture_scale > 0 ? a.texture_scale : fallback;
+  }
+  function resolveFinalOpacity(skin, key) {
+    var a = skin.anim && skin.anim[key];
+    var v = a && a.texture_final_opacity != null ? a.texture_final_opacity : 1;
+    return Math.max(0, Math.min(1, v));
+  }
+  function texOffset(skin, key, suffix) {
+    var a = skin.anim && skin.anim[key];
+    return a && a[suffix] != null ? a[suffix] : 0;
+  }
+  function hsOffset(skin, key, suffix) {
+    var a = skin.anim && skin.anim[key];
+    return a && a[suffix] != null ? a[suffix] : 0;
+  }
+  function resolveBarTravel(elapsed) {
+    if (elapsed < BAR_BOUNCE_START || elapsed >= BAR_BOUNCE_END) return 0;
+    if (elapsed <= BAR_BOUNCE_PEAK) {
+      var p = (elapsed - BAR_BOUNCE_START) / (BAR_BOUNCE_PEAK - BAR_BOUNCE_START);
+      return lerp(0, BAR_BOUNCE_DIST, easeOutSoft(p));
+    }
+    if (elapsed <= BAR_BOUNCE_HOLD_END) return BAR_BOUNCE_DIST;
+    var p2 = (elapsed - BAR_BOUNCE_HOLD_END) / (BAR_BOUNCE_END - BAR_BOUNCE_HOLD_END);
+    return lerp(BAR_BOUNCE_DIST, 0, easeInQuart(p2));
+  }
+  function resolveBarRotation(elapsed) {
+    if (state.combo <= 1 || elapsed <= BAR_SPIN_START) return 0;
+    var dur = state.combo >= 5 ? BAR_SPIN_360 : BAR_SPIN_180;
+    var target = state.combo >= 5 ? 360 : 180;
+    var p = clamp01((elapsed - BAR_SPIN_START) / dur);
+    var dir = (state.spinDir || 1);
+    return target * easeOutCubic(p) * dir;
+  }
+  function resolveBarEntryScale(elapsed, cfg) {
+    var dur = Math.round((cfg.bar_entry_duration != null ? cfg.bar_entry_duration : 0.18) * 1000);
+    var init = cfg.bar_entry_initial_scale != null ? cfg.bar_entry_initial_scale : 1.6;
+    if (dur <= 0 || init <= 1) return 1;
+    if (elapsed >= dur) return 1;
+    return lerp(init, 1, easeOutCubic(elapsed / dur));
+  }
+  /* 入场/出场分段时间控制：
+     - 入场：徽章立即出现 → 约 3 帧后外框/击杀数淡入 → 再过 3 帧光环显现
+     - 出场：外框先消失，同时徽章缩小淡出，徽章消失后光环/击杀数变暗淡出
+     帧时长取粒子动画帧间隔（默认 25ms），3 帧 ≈ 75ms */
+  function entryDelayFrames(skin, n) {
+    var a = skin.anim && skin.anim.base_particle;
+    var ms = (a && a.texture_animation_interval_ms) || 25;
+    return n * ms;
+  }
+  function fadeInRange(elapsed, start, dur) {
+    var t = elapsed - start;
+    if (t <= 0) return 0;
+    if (t >= dur) return 1;
+    return t / dur;
+  }
+  function fadeOutRange(elapsed, start, dur) {
+    var t = elapsed - start;
+    if (t <= 0) return 1;
+    if (t >= dur) return 0;
+    return 1 - t / dur;
+  }
+  function resolveFlash(elapsed, cfg) {
+    var count = Math.max(0, Math.min(12, cfg.icon_flash_count != null ? cfg.icon_flash_count : 4));
+    if (count <= 0) return { alpha: 0, color: "#fff" };
+    var hold = Math.round((cfg.icon_flash_hold_duration != null ? cfg.icon_flash_hold_duration : 0.08) * 1000);
+    if (hold <= 0) return { alpha: 0, color: "#fff" };
+    var gap = Math.max(20, Math.round(hold * 0.75));
+    var cycle = hold + gap;
+    var total = hold + cycle * (count - 1);
+    if (elapsed >= total) return { alpha: 0, color: "#fff" };
+    var cycEl = elapsed % cycle;
+    if (cycEl >= hold) return { alpha: 0, color: "#fff" };
+    var edge = Math.min(35, hold * 0.25);
+    var a = 1;
+    if (edge > 1) {
+      if (cycEl < edge) a = cycEl / edge;
+      else if (hold - cycEl < edge) a = (hold - cycEl) / edge;
+    }
+    return { alpha: clamp01(a) * FLASH_MAX_ALPHA, color: cfg.color_icon_flash || "#FF2A36" };
+  }
+  function resolveHeadshot(elapsed, cfg, restColor) {
+    var dur = Math.round((cfg.headshot_anim_duration != null ? cfg.headshot_anim_duration : 0.25) * 1000);
+    var init = cfg.headshot_anim_initial_scale != null ? cfg.headshot_anim_initial_scale : 1.8;
+    if (dur <= 0 || init <= 1 || elapsed >= dur) return { scale: 1, color: restColor };
+    var t = clamp01(elapsed / dur);
+    var scale = lerp(init, 1, easeOutCubic(t));
+    var phase = Math.sin(elapsed * 18 * Math.PI * 2 / 1000);
+    var env = (1 - t) * (1 - t);
+    var color = phase > 0 ? lerpColor(restColor, "#FFFFFF", env) : restColor;
+    return { scale: scale, color: color };
+  }
+  function resolveBlade(elapsed, skin, cfg) {
+    if (cfg.enable_blade_rotation_effect === false) return 0;
+    var base = /gaia/i.test(skin.display_name) ? 1100 : 1350;
+    var win = Math.max(0.2, cfg.blade_deceleration_window != null ? cfg.blade_deceleration_window : 1.5);
+    var t = clamp01(elapsed / (win * 1000));
+    var total = base * win * (1 - Math.pow(1 - t, 4)) * 0.25;
+    return -total * (state.spinDir || 1);
+  }
+  function lerpColor(c1, c2, t) {
+    var r1 = parseInt(c1.slice(1, 3), 16), g1 = parseInt(c1.slice(3, 5), 16), b1 = parseInt(c1.slice(5, 7), 16);
+    var r2 = parseInt(c2.slice(1, 3), 16), g2 = parseInt(c2.slice(3, 5), 16), b2 = parseInt(c2.slice(5, 7), 16);
+    var r = Math.round(lerp(r1, r2, t)), g = Math.round(lerp(g1, g2, t)), b = Math.round(lerp(b1, b2, t));
+    return "#" + ((1 << 24) + (r << 16) + (g << 8) + b).toString(16).slice(1).toUpperCase();
+  }
+  function drawFrame(ctx, img, f, dx, dy, dw, dh) {
+    ctx.drawImage(img, f.u, f.v, f.w, f.h, dx, dy, dw, dh);
+  }
+  /* 镜像粒子爆发：以 centerX 为轴左右对称绘制，右侧 flipX */
+  function drawFrameMirrored(ctx, img, f, centerX, centerY, dw, dh) {
+    ctx.drawImage(img, f.u, f.v, f.w, f.h, centerX, centerY, dw, dh);
+    ctx.save();
+    ctx.translate(centerX, 0);
+    ctx.scale(-1, 1);
+    ctx.drawImage(img, f.u, f.v, f.w, f.h, 0, centerY, dw, dh);
+    ctx.restore();
+  }
+  /* 粒子叠加 spec 常量（hero_flame / large_sparks / x_sparks） */
+  var OVERLAY_SPECS = {
+    hero_flame:   { anchorX: 0.4934375,  anchorY: 0.49079242, src: 8.0,  ox: 0, oy: -30, additive: false },
+    large_sparks: { anchorX: 0.49052733, anchorY: 0.5185547,  src: 6.8,  ox: 0, oy: 2,   additive: true },
+    x_sparks:     { anchorX: 0.48015872, anchorY: 0.56722003, src: 11.0, ox: 0, oy: -8,  additive: false }
+  };
+  function drawOverlayParticle(ctx, skin, key, elapsed, iconW, iconH, scale, extraY, alpha, brightness, contrast) {
+    var cfg = skin.config || {};
+    if (cfg["enable_" + key] === false) return;
+    var spec = OVERLAY_SPECS[key];
+    if (!spec) return;
+    var fallback = key === "x_sparks" ? parseHexColor(cfg.color_icon_flash, 0xFF2A36) : (/gaia/i.test(skin.display_name) || /gaia/i.test(skin.textures.emblem || "") ? 0xE2505C : 0xFFD138);
+    var img = getLayerTex(skin, skin.textures[key], brightness, contrast, particleColor(skin, key, fallback));
+    if (!isReady(img)) return;
+    var f = getFrame(skin, key, elapsed);
+    var srcScale = spec.src * frameScale(skin, key, 1);
+    var stKey = (SIZE_TUNING || {})[key.replace(/_/g, "-")] || 1;
+    var dw = iconW * srcScale * (f.w / 1729) * stKey;
+    var dh = iconH * srcScale * (f.h / 1729) * stKey;
+    if (dw <= 0 || dh <= 0) return;
+    var oxx = spec.ox + texOffset(skin, key, "texture_x_offset") * scale;
+    var oyy = spec.oy + texOffset(skin, key, "texture_y_offset") * scale + extraY;
+    ctx.save();
+    if (spec.additive) ctx.globalCompositeOperation = "lighter";
+    ctx.globalAlpha = alpha;
+    ctx.drawImage(img, f.u, f.v, f.w, f.h, oxx - dw * spec.anchorX, oyy - dh * spec.anchorY, dw, dh);
+    ctx.restore();
+  }
+
+  /* ================= 音效 ================= */
+  function playSound(file, btn) {
+    if (!state.soundOn) return;   /* 声音开关关闭时不播放 */
+    try {
+      if (state.sound) { state.sound.pause(); state.sound = null; }
+      var a = new Audio(SND_BASE + file);
+      state.sound = a;
+      a.play().catch(function () { });
+    } catch (e) { }
+  }
+  /* 播放动画时同步播放音效：
+     普通/爆头 = 系列前缀 + kill_<连杀数>.<扩展名>（爆头与普通使用相同连杀音效）；
+     连杀数超过 5（如 6 连杀）无对应音效文件时，回退使用 5 连杀音效。
+     无音效的系列不播放。 */
+  function playKillSound() {
+    var skin = getSkin();
+    var name = skin.display_name.replace(/^Valorant\s*/i, "").toLowerCase().replace(/[^a-z0-9]+/g, "");
+    var prefix = "";
+    var ext = "ogg";
+    var map = [
+      ["prime", "prime", "ogg"], ["glitchpop", "glitchpop", "ogg"], ["singularity", "singularity", "ogg"],
+      ["gaia", "gaia", "ogg"], ["bubblegum", "bubblegumdeathwish", "ogg"], ["champions", "champions2021", "ogg"],
+      ["sovereign", "sovereign", "mp3"],
+      ["elderflame", "elderflame", "mp3"],
+      ["oni", "oni", "mp3"],
+      ["default", "default", "mp3"],
+    ];
+    for (var i = 0; i < map.length; i++) {
+      if (name.indexOf(map[i][0]) >= 0) { prefix = map[i][1]; ext = map[i][2]; break; }
+    }
+    if (!prefix) return;
+    var n = Math.min(state.combo, 5);   /* 5 杀以上（6）无 6 号音效，用 5 号；爆头与普通相同 */
+    playSound(prefix + "kill_" + n + "." + ext, null);
+  }
+
+  /* ================= 皮肤参数摘要 ================= */
+  function renderInfo() {
+    var skin = getSkin();
+    skinTag.textContent = skinDisplayName(skin);
+    var rows = [];
+    var keys = ["base_particle", "hero_flame", "large_sparks", "x_sparks", "emblem", "frame", "bar", "headshot"];
+    var names = { base_particle: "infoBase", hero_flame: "infoFlame", large_sparks: "infoLargeSparks", x_sparks: "infoXSparks", emblem: "infoEmblem", frame: "infoFrame", bar: "infoBar", headshot: "infoHeadshot" };
+    keys.forEach(function (k) {
+      var texName = skin.textures[k];
+      if (!texName) return;
+      var a = skin.anim && skin.anim[k];
+      var animTxt = (a && a.enable_texture_animation)
+        ? t("animFrames").replace("{n}", a.texture_animation_total_frames || 1).replace("{m}", a.texture_animation_interval_ms || 0)
+        : t("animSingle");
+      rows.push("<tr><td>" + t(names[k]) + "</td><td>" + animTxt + "</td></tr>");
+    });
+    infoTable.innerHTML = rows.join("");
+  }
+
+  /* ================= UI 事件 ================= */
+  /* 按系列分组：下拉框只显示每个系列的首个条目（系列名），
+     变种（V1/V2/V3 等）通过系列下方的变种按钮切换，不在下拉中重复列出 */
+  function buildSkinSelect() {
+    skinSelect.innerHTML = "";
+    var seen = {};
+    SKIN_DATA.forEach(function (s, i) {
+      var key = skinSeries(s);
+      if (seen[key]) return;          /* 同系列只取第一个（基础版）作为下拉项 */
+      seen[key] = true;
+      var o = document.createElement("option");
+      o.value = i;
+      o.textContent = skinDisplayName(s);
+      skinSelect.appendChild(o);
+    });
+    /* 重建后恢复选中当前皮肤所属系列的首个条目 */
+    var curKey = skinSeries(getSkin());
+    for (var k = 0; k < SKIN_DATA.length; k++) {
+      if (skinSeries(SKIN_DATA[k]) === curKey) {
+        skinSelect.value = String(k);
+        break;
+      }
+    }
+  }
+  /* 构建当前系列的变种按钮组：系列内条目多于 1 个时显示，
+     按钮文本按条目顺序统一为 基础 / V1 / V2 / V3（不重复皮肤名）；
+     点击按钮切换到对应条目；单条目系列隐藏按钮组 */
+  function buildVariantSeg() {
+    var seg = document.getElementById("variantSeg");
+    if (!seg) return;
+    var cur = state.skinIndex;
+    var curKey = skinSeries(getSkin());
+    var list = [];
+    SKIN_DATA.forEach(function (s, i) {
+      if (skinSeries(s) === curKey) list.push(i);
+    });
+    if (list.length <= 1) {
+      seg.innerHTML = "";
+      seg.style.display = "none";
+      return;
+    }
+    seg.innerHTML = "";
+    seg.style.display = "";
+    list.forEach(function (i, idx) {
+      var b = document.createElement("button");
+      b.type = "button";
+      b.textContent = idx === 0 ? t("variantBase") : "V" + idx;
+      b.classList.toggle("active", i === cur);
+      b.addEventListener("click", function () { setSkin(i); });
+      seg.appendChild(b);
+    });
+  }
+  function triggerKill() {
+    state.paused = false;
+    state.startTime = performance.now();
+    state.spinDir = Math.random() < 0.5 ? 1 : -1;
+    syncPauseBtn();
+    playKillSound();   /* 播放动画时同步播放音效 */
+  }
+  function setSkin(i) {
+    state.skinIndex = i;
+    state.startTime = performance.now();
+    /* 同步下拉框到当前条目所属系列的首个条目（下拉只列系列名） */
+    var key = skinSeries(getSkin());
+    for (var k = 0; k < SKIN_DATA.length; k++) {
+      if (skinSeries(SKIN_DATA[k]) === key) {
+        skinSelect.value = String(k);
+        break;
+      }
+    }
+    buildVariantSeg();              /* 刷新变种按钮组 */
+    applySkinSeries(getSkin());     /* 套用皮肤系列专属 CSS（body.skin-xxx）+ 重读变量 */
+    renderInfo();
+  }
+  function setType(t) {
+    state.killType = t;
+    document.querySelectorAll("#typeSeg button").forEach(function (b) {
+      b.classList.toggle("active", parseInt(b.dataset.type, 10) === t);
+    });
+    if (state.killType === 1) triggerKill();
+  }
+  function setCombo(c) {
+    state.combo = c;
+    document.querySelectorAll("#comboSeg button").forEach(function (b) {
+      b.classList.toggle("active", parseInt(b.dataset.combo, 10) === c);
+    });
+    triggerKill();
+  }
+
+  skinSelect.addEventListener("change", function () { setSkin(parseInt(skinSelect.value, 10)); });
+  document.getElementById("typeSeg").addEventListener("click", function (e) {
+    var b = e.target.closest("button");
+    if (b) setType(parseInt(b.dataset.type, 10));
+  });
+  document.getElementById("comboSeg").addEventListener("click", function (e) {
+    var b = e.target.closest("button");
+    if (b) setCombo(parseInt(b.dataset.combo, 10));
+  });
+  document.getElementById("btnPlay").addEventListener("click", triggerKill);
+  document.getElementById("btnReset").addEventListener("click", function () {
+    state.playing = true; state.paused = false; syncPauseBtn(); triggerKill();
+  });
+  document.getElementById("btnPause").addEventListener("click", function () {
+    state.paused = !state.paused;
+    syncPauseBtn();
+    if (state.paused && state.sound) { state.sound.pause(); state.sound = null; }
+  });
+  function syncPauseBtn() {
+    var b = document.getElementById("btnPause");
+    b.textContent = t(state.paused ? "btnResume" : "btnPause");
+  }
+  document.getElementById("chkLoop").addEventListener("change", function (e) { state.loop = e.target.checked; });
+  document.getElementById("chkSound").addEventListener("change", function (e) {
+    state.soundOn = e.target.checked;
+    if (!state.soundOn && state.sound) { state.sound.pause(); state.sound = null; }
+  });
+  document.getElementById("speedRange").addEventListener("input", function (e) {
+    state.speed = parseFloat(e.target.value);
+    document.getElementById("speedVal").textContent = state.speed + "x";
+  });
+  document.getElementById("zoomRange").addEventListener("input", function (e) {
+    state.zoom = parseFloat(e.target.value);
+    document.getElementById("zoomVal").textContent = state.zoom + "x";
+  });
+  document.getElementById("langBtn").addEventListener("click", function () {
+    lang = (lang === "zh") ? "en" : "zh";
+    document.documentElement.lang = (lang === "zh") ? "zh-CN" : "en";
+    applyLang();
+  });
+  document.querySelectorAll(".switch input[data-layer]").forEach(function (inp) {
+    inp.addEventListener("change", function () {
+      state.layers[inp.dataset.layer] = inp.checked;
+    });
+  });
+
+  /* ================= 主循环 ================= */
+  var last = performance.now();
+  function loop(now) {
+    if (!state.paused) {
+      render(now);
+    }
+    requestAnimationFrame(loop);
+  }
+
+  /* ================= 初始化 ================= */
+  document.documentElement.lang = "zh-CN";
+  applySkinSeries(getSkin());
+  buildSkinSelect();
+  buildVariantSeg();
+  renderInfo();
+  resize();
+  applyLang();
+  syncPauseBtn();
+  triggerKill();
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>
