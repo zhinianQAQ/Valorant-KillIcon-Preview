@@ -218,6 +218,11 @@ canvas#stage { display: block; width: 100%; height: auto; }
       <label class="switch"><input type="checkbox" id="chkSound" checked><span class="sl"></span></label>
     </div>
     <div class="row">
+      <label data-i18n="volume">音量</label>
+      <input type="range" id="volRange" min="0" max="1" step="0.05" value="0.1">
+      <div class="val-label"><span>0</span><span id="volVal">10%</span><span>100%</span></div>
+    </div>
+    <div class="row">
       <label data-i18n="speed">播放速度</label>
       <input type="range" id="speedRange" min="0.25" max="2" step="0.25" value="1">
       <div class="val-label"><span>0.25x</span><span id="speedVal">1x</span><span>2x</span></div>
@@ -307,6 +312,7 @@ canvas#stage { display: block; width: 100%; height: auto; }
     speed: 1,
     zoom: 1,
     soundOn: true,
+    volume: 0.1,   // 音量：0 ~ 1（默认与原素材一致：10%）
     startTime: performance.now() - 400,   // 让初始画面处于动画中段，打开即可见效果
     layers: { base: true, halo: true, bar: true, frame: true, blade: true, emblem: true, headshot: true, overlay: true, flash: true },
     sound: null
@@ -328,6 +334,17 @@ canvas#stage { display: block; width: 100%; height: auto; }
   var SND_BASE = "assets/sounds/";
   var texCache = {};
   var imgPool = {};
+  var audioCache = {};   /* 音效预加载缓存：key = 文件名，value = 已 load 的 Audio */
+
+  /* 音效系列映射：显示名前缀 → 音效文件名前缀 + 扩展名（playKillSound 与预加载共用） */
+  var SOUND_SERIES = [
+    ["prime", "prime", "ogg"], ["glitchpop", "glitchpop", "ogg"], ["singularity", "singularity", "ogg"],
+    ["gaia", "gaia", "ogg"], ["bubblegum", "bubblegumdeathwish", "ogg"], ["champions", "champions2021", "ogg"],
+    ["sovereign", "sovereign", "mp3"],
+    ["elderflame", "elderflame", "mp3"],
+    ["oni", "oni", "mp3"],
+    ["default", "default", "mp3"],
+  ];
 
   function tex(name) {
     if (!name) return null;
@@ -337,6 +354,52 @@ canvas#stage { display: block; width: 100%; height: auto; }
       texCache[name] = img;
     }
     return texCache[name];
+  }
+
+  /* 预加载单个音效：创建 Audio 并提前 load，播放时直接 clone 使用，避免首次播放卡顿 */
+  function preloadAudio(file) {
+    if (audioCache[file]) return;
+    try {
+      var a = new Audio(SND_BASE + file);
+      a.preload = "auto";
+      a.load();
+      audioCache[file] = a;
+    } catch (e) { }
+  }
+
+  /* ================= 全量资源预加载 =================
+     打开网页即加载全部贴图与音效，保证切换皮肤/首次播放时无需等待加载。
+     贴图：遍历全部皮肤数据引用的纹理 + 系列光环贴图 + 通用粒子贴图；
+     音效：各系列 kill_1~5 全部预载。 */
+  function preloadAll() {
+    /* 贴图：皮肤数据中引用的所有纹理 */
+    var texSet = {};
+    SKIN_DATA.forEach(function (s) {
+      var t = s.textures || {};
+      for (var k in t) {
+        if (t[k]) texSet[t[k]] = true;
+      }
+    });
+    /* 贴图：各系列光环贴图 */
+    for (var s in SERIES_RING) {
+      if (SERIES_RING[s]) texSet[SERIES_RING[s]] = true;
+    }
+    /* 贴图：通用粒子/爆头贴图（部分皮肤数据未显式引用时也确保预载） */
+    ["particle_base_t1.png", "particle_base_t2.png", "particle_base_t3.png",
+     "particle_hero_flame.png", "particle_large_sparks.png", "particle_x_sparks.png",
+     "headshot.png", "base_ring.png", "default_ring.png"].forEach(function (p) {
+      texSet[p] = true;
+    });
+    Object.keys(texSet).forEach(function (p) { tex(p); });
+
+    /* 音效：所有系列的 kill_1 ~ kill_5 全部预载 */
+    for (var i = 0; i < SOUND_SERIES.length; i++) {
+      var pfx = SOUND_SERIES[i][1];
+      var ext = SOUND_SERIES[i][2];
+      for (var n = 1; n <= 5; n++) {
+        preloadAudio(pfx + "kill_" + n + "." + ext);
+      }
+    }
   }
 
   function isReady(x) { return x && (x.naturalWidth || x.width) > 0; }
@@ -449,6 +512,7 @@ canvas#stage { display: block; width: 100%; height: auto; }
     btnResume: { zh: "继续", en: "Resume" },
     loop: { zh: "循环播放", en: "Loop" },
     sound: { zh: "音效", en: "Sound" },
+    volume: { zh: "音量", en: "Volume" },
     speed: { zh: "播放速度", en: "Speed" },
     zoom: { zh: "缩放", en: "Zoom" },
     layers: { zh: "图层开关", en: "Layer Toggles" },
@@ -1072,7 +1136,11 @@ canvas#stage { display: block; width: 100%; height: auto; }
     if (!state.soundOn) return;   /* 声音开关关闭时不播放 */
     try {
       if (state.sound) { state.sound.pause(); state.sound = null; }
-      var a = new Audio(SND_BASE + file);
+      /* 优先从预加载缓存 clone（cloneNode 保留已加载媒体，无需重新下载）；
+         缓存缺失时才新建 Audio */
+      var tmpl = audioCache[file] || null;
+      var a = tmpl ? tmpl.cloneNode() : new Audio(SND_BASE + file);
+      a.volume = state.volume;   /* 音量随滑块调整（默认 0.1） */
       state.sound = a;
       a.play().catch(function () { });
     } catch (e) { }
@@ -1086,16 +1154,8 @@ canvas#stage { display: block; width: 100%; height: auto; }
     var name = skin.display_name.replace(/^Valorant\s*/i, "").toLowerCase().replace(/[^a-z0-9]+/g, "");
     var prefix = "";
     var ext = "ogg";
-    var map = [
-      ["prime", "prime", "ogg"], ["glitchpop", "glitchpop", "ogg"], ["singularity", "singularity", "ogg"],
-      ["gaia", "gaia", "ogg"], ["bubblegum", "bubblegumdeathwish", "ogg"], ["champions", "champions2021", "ogg"],
-      ["sovereign", "sovereign", "mp3"],
-      ["elderflame", "elderflame", "mp3"],
-      ["oni", "oni", "mp3"],
-      ["default", "default", "mp3"],
-    ];
-    for (var i = 0; i < map.length; i++) {
-      if (name.indexOf(map[i][0]) >= 0) { prefix = map[i][1]; ext = map[i][2]; break; }
+    for (var i = 0; i < SOUND_SERIES.length; i++) {
+      if (name.indexOf(SOUND_SERIES[i][0]) >= 0) { prefix = SOUND_SERIES[i][1]; ext = SOUND_SERIES[i][2]; break; }
     }
     if (!prefix) return;
     var n = Math.min(state.combo, 5);   /* 5 杀以上（6）无 6 号音效，用 5 号；爆头与普通相同 */
@@ -1237,6 +1297,12 @@ canvas#stage { display: block; width: 100%; height: auto; }
     state.soundOn = e.target.checked;
     if (!state.soundOn && state.sound) { state.sound.pause(); state.sound = null; }
   });
+  document.getElementById("volRange").addEventListener("input", function (e) {
+    state.volume = parseFloat(e.target.value);
+    document.getElementById("volVal").textContent = Math.round(state.volume * 100) + "%";
+    /* 正在播放的音效同步调整音量 */
+    if (state.sound) state.sound.volume = state.volume;
+  });
   document.getElementById("speedRange").addEventListener("input", function (e) {
     state.speed = parseFloat(e.target.value);
     document.getElementById("speedVal").textContent = state.speed + "x";
@@ -1267,6 +1333,7 @@ canvas#stage { display: block; width: 100%; height: auto; }
 
   /* ================= 初始化 ================= */
   document.documentElement.lang = "zh-CN";
+  preloadAll();          /* 打开页面即预加载全部贴图与音效 */
   applySkinSeries(getSkin());
   buildSkinSelect();
   buildVariantSeg();
